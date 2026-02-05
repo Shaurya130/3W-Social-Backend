@@ -122,7 +122,9 @@ const getAllFeed = asyncHandler(async (req, res) => {
             comments: post.comments.map(c => ({
                 username: c.user?.username,
                 content: c.content
-            }))
+            })),
+            shares: post.shares,
+
         };
     });
 
