@@ -8,7 +8,7 @@ const createPost = asyncHandler(async (req, res) => {
     const { content } = req.body;
     const owner = req.user._id;
 
-    const imageLocalPath = req.files?.image?.[0]?.path;
+    const imageLocalPath = req.file?.path;
     
     if (!content?.trim() && !imageLocalPath) {
         throw new ApiError(400, "Post must contain either text or an image");
@@ -16,9 +16,13 @@ const createPost = asyncHandler(async (req, res) => {
 
     let imageUrl = "";
     if (imageLocalPath) {
-        const uploadResult = await uploadOnCloudinary(imageLocalPath);
-        imageUrl = uploadResult?.url || "";
-    }
+  const uploadResult = await uploadOnCloudinary(imageLocalPath);
+  if (!uploadResult) {
+     throw new ApiError(500, "Image upload failed");
+  }
+  imageUrl = uploadResult.url;
+}
+
 
     const newPost = await Post.create({
         type: "POST",
@@ -199,6 +203,39 @@ const voteInPoll = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, post.poll, "Vote recorded successfully"));
 });
 
+const toggleShare = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+  const userId = req.user._id;
+
+  const post = await Post.findById(postId);
+
+  if (!post) {
+    throw new ApiError(404, "Post not found");
+  }
+
+  const alreadyShared = post.shares.includes(userId);
+
+  if (alreadyShared) {
+    post.shares.pull(userId);   // unshare
+  } else {
+    post.shares.push(userId);   // share
+  }
+
+  await post.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        sharesCount: post.shares.length,
+        shared: !alreadyShared
+      },
+      alreadyShared ? "Unshared" : "Shared"
+    )
+  );
+});
+
+
 export {
     createPost,
     createPoll,
@@ -206,5 +243,6 @@ export {
     getAllFeed,
     toggleLike,
     addComment,
-    voteInPoll
+    voteInPoll,
+    toggleShare
 };

@@ -9,7 +9,8 @@ import {
     getAllFeed,
     toggleLike,
     addComment,
-    voteInPoll
+    voteInPoll,
+    toggleShare
 } from "../Controller/post.controller.js";
 
 
@@ -22,4 +23,6 @@ router.route("/create-promotion").post(verifyJWT, upload.single("image"), create
 router.route("/:postId/toggle-like").post(verifyJWT, toggleLike); //tested
 router.route("/:postId/add-comment").post(verifyJWT, addComment); //tested
 router.route("/:postId/vote").post(verifyJWT, voteInPoll);  //tested
+router.route("/:postId/toggle-share").post(verifyJWT, toggleShare); //tested
+
 export default router;

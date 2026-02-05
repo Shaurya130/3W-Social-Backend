@@ -25,7 +25,12 @@ const uploadOnCloudinary = async (localFilePath) => {
         console.log("File uploaded on Cloudinary. File Src:", response.url);
 
         // Delete the file from local server
-        fs.unlinkSync(localFilePath);
+        try {
+  fs.unlinkSync(localFilePath);
+} catch (err) {
+  console.log("Temp file delete failed:", err.message);
+}
+
         return response;
     } catch (error) {
         console.error("Error uploading file to Cloudinary:", error.message);
