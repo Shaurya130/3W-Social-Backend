@@ -7,6 +7,8 @@ const app= express();
 
 // middleware - in between configuration to do a certain task over the code
 
+ app.set("trust proxy", 1);
+
 app.use(
     cors({
         origin: process.env.CORS_ORIGIN || "http://localhost:5173", // or your React app's URL
