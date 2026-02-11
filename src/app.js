@@ -10,19 +10,19 @@ app.set("trust proxy", 1);
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (
-        !origin ||
-        origin === "http://localhost:5173" ||
-        origin.endsWith(".vercel.app")
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true
-  })
+  origin: (origin, callback) => {
+    if (
+      !origin ||
+      origin === "http://localhost:5173" ||
+      /\.vercel\.app$/.test(origin)
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+})
 );
 
 
